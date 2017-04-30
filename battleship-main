@@ -1,0 +1,257 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class Battleship {
+
+    public static void main(String[] args)
+    {
+        
+        int[][] userBoard = new int[10][10];
+        int[][] cpuHideBoard = new int[10][10];
+        int[][] cpuShowBoard = new int[10][10];
+        int[][] ships = new int[3][2];
+        int[] shoot = new int[2];
+        int attempts=0,
+            shotHit=0;
+        
+        setBoard(cpuHideBoard);
+        setBoard(userBoard);
+        setBoard(cpuShowBoard);
+        placeShips(5,cpuHideBoard, "Carrier");
+        placeShips(4,cpuHideBoard, "Battleship");
+        placeShips(3,cpuHideBoard, "Cruiser");
+        placeShips(3,cpuHideBoard,"Submarine");
+        placeShips(2,cpuHideBoard, "Destroyer");
+        System.out.println("Done");
+        userPlaceShips(5,userBoard,"Carrier");
+        userPlaceShips(4,userBoard, "Battleship");
+        userPlaceShips(3,userBoard, "Cruiser");
+        userPlaceShips(3,userBoard,"Submarine");
+        userPlaceShips(2,userBoard, "Destroyer");
+        
+        System.out.println();
+        showBoard(cpuShowBoard);
+        
+        do
+        {
+            hit(cpuHideBoard,cpuShowBoard);
+            attempts++;
+        }while(shotHit!=17);
+        
+        System.out.println("\n\n\nBattleship Java game finished! You sunk all the ships in "+attempts+" attempts");
+        showBoard(cpuShowBoard);
+    }
+    
+    public static void setBoard(int[][] board)
+    {
+        for(int row = 0; row < 10; row++)
+        {
+            for(int column = 0; column < 10; column++)
+            {
+                board[row][column] = -1;
+            }
+        }
+    }
+    
+    public static void userPlaceShips(int size, int board[][], String name)
+    {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Where would you like to place your " + name + "?");
+        System.out.print("Row: ");
+         int row = input.nextInt();
+         System.out.print("Column: ");
+         int column = input.nextInt();
+         System.out.println("Do you want your " + name + " to be horizontal? (Enter 1 for yes, 2 for no)");
+         int orientation = input.nextInt();
+         
+         if(orientation == 1) //horizontal
+            {
+                int temp = column;
+                int stop = temp;
+                while(temp < stop+size)
+                {
+                    if(board[row][temp]==1)
+                    {
+                        System.out.println("Invalid location, try again!");
+                        System.out.print("Row: ");
+                        row = input.nextInt();
+                        System.out.print("Column: ");
+                        column = input.nextInt();
+                        System.out.println("Do you want your " + name + " to be horizontal? (Enter 1 for yes, 2 for no)");
+                        orientation = input.nextInt();
+                    }
+                    else
+                    {
+                        temp++;
+                    }
+                }
+                
+                
+                for(int i = column; i < column+size; i++)
+                {
+                    board[row][i]=1;
+                }
+                showBoard(board);
+            }
+             else     //vertical
+            {
+                
+                int temp = row;
+                int stop = temp;
+                while(temp < stop+size)
+                {
+                    if(board[temp][column]==1)
+                    {
+                        System.out.println("Invalid location, try again!");
+                        System.out.print("Row: ");
+                        row = input.nextInt();
+                        System.out.print("Column: ");
+                        column = input.nextInt();
+                        System.out.println("Do you want your " + name + " to be horizontal? (Enter 1 for yes, 2 for no)");
+                        orientation = input.nextInt();
+                    }
+                    else
+                    {
+                        temp++;
+                    }
+                }
+                
+                for(int i = row; i < row+size; i++)
+                {
+                    board[i][column]=1;
+                }
+                showBoard(board);
+            }
+         
+         
+    }
+    
+    public static void showBoard(int[][] board)
+    {
+        System.out.println("\t0 \t1 \t2 \t3 \t4 \t5 \t6 \t7 \t8 \t9");
+        System.out.println();
+        
+        for(int row=0 ; row < 10 ; row++ ){
+            System.out.print((row)+"");
+            for(int column=0 ; column < 10 ; column++ ){
+                if(board[row][column]==-1){
+                    System.out.print("\t"+"~");
+                }else if(board[row][column]==0){
+                    System.out.print("\t"+"O");
+                }else if(board[row][column]==1){
+                    System.out.print("\t"+"X");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public static void placeShips(int size, int board[][], String name)
+    {
+        System.out.println("Placing " + name + ". . .");
+        Random rand = new Random();
+        int orientation = Math.abs(rand.nextInt(2)+1);
+        
+        if(orientation == 1) //horizontal
+        {
+            System.out.println("This ship will be horizontal");
+            
+            Random r = new Random();
+            int row = Math.abs(r.nextInt(9));
+            System.out.println("The row is: " + row);
+            
+            Random c = new Random();
+            int column = Math.abs(c.nextInt(10)-size);
+            System.out.println("The Column is: " +column);
+
+            int temp = column;
+            int stop = temp;
+            while(temp < stop+size)
+            {
+                if(board[row][temp]==1)
+                {
+                    System.out.println("I can't place this ship here!\nI'll try again.");
+                    row = Math.abs(r.nextInt(9));
+                    column = Math.abs(c.nextInt(10)-size);
+                    temp = column;
+                    System.out.println("The new row is: " + row);
+                    System.out.println("The new column is: " + column);
+                }
+                else
+                {
+                    System.out.println("The spot at [" + row + "," + temp + "] is okay, I'll look at the next spot! \n");
+                    temp++;
+                }
+            }
+            System.out.println("This is a valid spot, I'll put my ship here.\n ======================================================================================\n\n");
+            
+            for(int i = column; i < column+size; i++)
+            {
+                board[row][i]=1;
+            }
+        }
+        
+        else     //vertical
+        {
+            System.out.println("This ship will be vertical");
+            
+            Random r = new Random();
+            int row = Math.abs(r.nextInt(10)-size);
+            System.out.println("The row is: " + row);
+            
+            Random c = new Random();
+            int column = Math.abs(c.nextInt(9));
+            System.out.println("The Column is: " +column);
+
+            int temp = row;
+            int stop = temp;
+            while(temp < stop+size)
+            {
+                if(board[temp][column]==1)
+                {
+                    System.out.println("I can't place this ship here!\nI'll try again.");
+                    row = Math.abs(r.nextInt(10)-size);
+                    column = Math.abs(c.nextInt(9));
+                    temp = row;
+                    System.out.println("The new row is: " + row);
+                    System.out.println("The new column is: " + column);
+                }
+                else
+                {
+                    System.out.println("The spot at [" + temp + "," + column + "] is okay, I'll look at the next spot! \n");
+                    temp++;
+                }
+            }
+            System.out.println("This is a valid spot, I'll put my ship here.\n ======================================================================================\n\n");
+            
+            for(int i = row; i < row+size; i++)
+            {
+                board[i][column]=1;
+            }
+        }
+    }
+      
+     public static void hit( int[][] cpuBoard, int[][] userBoard)
+     {
+         Scanner input = new Scanner(System.in);
+         System.out.print("Row: ");
+         int row = input.nextInt();
+         System.out.print("Column: ");
+         int column = input.nextInt();
+         if(cpuBoard[row][column]==1)
+         {
+             System.out.println("Hit!");
+             userBoard[row][column]=1;
+             System.out.println("\n========================================================================================\n\n");
+             showBoard(userBoard);
+         }
+         else
+         {
+             userBoard[row][column] = 0;
+             System.out.println("Miss! Try again!");
+             showBoard(userBoard);
+         }
+     }
+
+       
+}
